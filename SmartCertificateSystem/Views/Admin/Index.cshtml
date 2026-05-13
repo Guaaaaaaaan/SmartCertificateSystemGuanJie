@@ -1,0 +1,48 @@
+@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<h1 class="h3 mb-3">Admin Dashboard</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-bg-primary">
+            <div class="card-body">
+                <div class="small">Students</div>
+                <div class="display-6">@Model.StudentCount</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-success">
+            <div class="card-body">
+                <div class="small">Certificates</div>
+                <div class="display-6">@Model.CertificateCount</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-secondary">
+            <div class="card-body">
+                <div class="small">Courses</div>
+                <div class="display-6">@Model.CourseCount</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-dark">
+            <div class="card-body">
+                <div class="small">Raw SQL Student Count</div>
+                <div class="display-6">@Model.RawSqlStudentCount</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-primary" asp-action="Students">Manage Students</a>
+    <a class="btn btn-primary" asp-action="Courses">Manage Courses</a>
+    <a class="btn btn-primary" asp-action="Certificates">Manage Certificates</a>
+    <a class="btn btn-outline-primary" asp-action="Files">Upload Files</a>
+</div>

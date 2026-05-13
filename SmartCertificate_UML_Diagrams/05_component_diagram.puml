@@ -1,0 +1,71 @@
+@startuml
+title Component Diagram - Smart Certificate Verification & Student Records Management System
+skinparam componentStyle rectangle
+
+package "UI Layer" {
+  [Console UI / Windows Forms / MVC Views] as UI
+}
+
+package "Business Logic Layer" {
+  [AuthService] as AuthService
+  [StudentService] as StudentService
+  [CertificateService] as CertificateService
+  [TranscriptService] as TranscriptService
+  [CourseService] as CourseService
+  [SearchSortService] as SearchSortService
+}
+
+package "File Management Layer" {
+  [FileService] as FileService
+  folder "Certificate Files" as CertificateFiles
+  folder "Transcript Files" as TranscriptFiles
+  folder "Student Documents" as StudentDocuments
+}
+
+package "Database Layer" {
+  [DatabaseManager] as DatabaseManager
+  database "SQL Server / SQLite / PostgreSQL" as DB
+}
+
+package "Models" {
+  [User]
+  [Student]
+  [Admin]
+  [Employer]
+  [Certificate]
+  [Transcript]
+  [Course]
+  [Module]
+}
+
+UI --> AuthService
+UI --> StudentService
+UI --> CertificateService
+UI --> TranscriptService
+UI --> CourseService
+UI --> SearchSortService
+
+AuthService --> DatabaseManager
+StudentService --> DatabaseManager
+CertificateService --> DatabaseManager
+TranscriptService --> DatabaseManager
+CourseService --> DatabaseManager
+SearchSortService --> DatabaseManager
+
+CertificateService --> FileService
+TranscriptService --> FileService
+StudentService --> FileService
+
+FileService --> CertificateFiles
+FileService --> TranscriptFiles
+FileService --> StudentDocuments
+
+DatabaseManager --> DB
+
+AuthService ..> User
+StudentService ..> Student
+CertificateService ..> Certificate
+TranscriptService ..> Transcript
+CourseService ..> Course
+CourseService ..> Module
+@enduml

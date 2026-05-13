@@ -1,0 +1,68 @@
+@model CertificateVerificationViewModel
+@{
+    ViewData["Title"] = "Verify Certificate";
+}
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <h1 class="h3 mb-3">Verify Certificate</h1>
+        <form asp-action="Verify" method="post" class="card card-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="CertificateId" class="form-label"></label>
+                <input asp-for="CertificateId" class="form-control" placeholder="SC-2026-0001" />
+                <span asp-validation-for="CertificateId" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="StudentName" class="form-label"></label>
+                <input asp-for="StudentName" class="form-control" placeholder="Alan Tan" />
+                <span asp-validation-for="StudentName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="DateOfBirth" class="form-label"></label>
+                <input asp-for="DateOfBirth" class="form-control" />
+                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+            </div>
+            <button class="btn btn-primary" type="submit">Verify</button>
+        </form>
+        <p class="small text-muted mt-2">Demo valid input: SC-2026-0001, Alan Tan, 2000-05-15.</p>
+    </div>
+
+    <div class="col-lg-7">
+        @if (Model.Result is not null)
+        {
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h5">Verification Result</h2>
+                    <div class="alert @(Model.Result.IsValid ? "alert-success" : "alert-danger")">
+                        @Model.Result.Message
+                    </div>
+                    @if (Model.Result.IsValid)
+                    {
+                        <dl class="row">
+                            <dt class="col-sm-4">Award Title</dt>
+                            <dd class="col-sm-8">@Model.Result.AwardTitle</dd>
+                            <dt class="col-sm-4">Completion Date</dt>
+                            <dd class="col-sm-8">@Model.Result.CompletionDate?.ToString("yyyy-MM-dd")</dd>
+                            <dt class="col-sm-4">Transcript Access</dt>
+                            <dd class="col-sm-8">
+                                @if (!string.IsNullOrWhiteSpace(Model.Result.TranscriptPath))
+                                {
+                                    <a asp-action="DownloadTranscript" asp-route-path="@Model.Result.TranscriptPath">Download transcript</a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Unavailable</span>
+                                }
+                            </dd>
+                        </dl>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

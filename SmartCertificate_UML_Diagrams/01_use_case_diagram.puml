@@ -1,0 +1,92 @@
+@startuml
+title Smart Certificate Verification & Student Records Management System
+left to right direction
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+
+actor Student
+actor Employer
+actor Admin
+
+rectangle "Smart Certificate Verification & Student Records Management System" {
+  usecase "Register Account" as UC_Register
+  usecase "Login" as UC_Login
+  usecase "Logout" as UC_Logout
+
+  usecase "Verify Certificate" as UC_Verify
+  usecase "Enter Certificate ID" as UC_CertID
+  usecase "Enter Student Name" as UC_StudentName
+  usecase "Enter Date of Birth" as UC_DOB
+  usecase "View Verification Result" as UC_Result
+  usecase "Access Transcript" as UC_AccessTranscript
+
+  usecase "Manage Student Records" as UC_ManageStudents
+  usecase "Add Student" as UC_AddStudent
+  usecase "Update Student Details" as UC_UpdateStudent
+  usecase "Delete Student Record" as UC_DeleteStudent
+  usecase "View All Students" as UC_ViewStudents
+
+  usecase "Manage Courses" as UC_ManageCourses
+  usecase "Add Course" as UC_AddCourse
+  usecase "Assign Modules" as UC_AssignModules
+  usecase "View Enrolled Students" as UC_ViewEnrolled
+
+  usecase "Generate Transcript" as UC_GenerateTranscript
+  usecase "Calculate GPA" as UC_CalculateGPA
+  usecase "Display Grades" as UC_DisplayGrades
+
+  usecase "Manage Files" as UC_ManageFiles
+  usecase "Upload Certificate PDF" as UC_UploadCert
+  usecase "Upload Transcript File" as UC_UploadTranscript
+  usecase "Retrieve Student Documents" as UC_RetrieveDocs
+
+  usecase "Search Student by Name" as UC_SearchStudent
+  usecase "Search Certificate by ID" as UC_SearchCert
+  usecase "Sort Students by GPA" as UC_SortGPA
+  usecase "Sort Students Alphabetically" as UC_SortName
+}
+
+Student --> UC_Register
+Student --> UC_Login
+Student --> UC_Logout
+Student --> UC_Verify
+Student --> UC_AccessTranscript
+
+Employer --> UC_Register
+Employer --> UC_Login
+Employer --> UC_Logout
+Employer --> UC_Verify
+
+Admin --> UC_Login
+Admin --> UC_Logout
+Admin --> UC_ManageStudents
+Admin --> UC_ManageCourses
+Admin --> UC_GenerateTranscript
+Admin --> UC_ManageFiles
+Admin --> UC_SearchStudent
+Admin --> UC_SearchCert
+Admin --> UC_SortGPA
+Admin --> UC_SortName
+
+UC_Verify ..> UC_CertID : <<include>>
+UC_Verify ..> UC_StudentName : <<include>>
+UC_Verify ..> UC_DOB : <<include>>
+UC_Verify ..> UC_Result : <<include>>
+UC_Verify ..> UC_AccessTranscript : <<extend>>
+
+UC_ManageStudents ..> UC_AddStudent : <<include>>
+UC_ManageStudents ..> UC_UpdateStudent : <<include>>
+UC_ManageStudents ..> UC_DeleteStudent : <<include>>
+UC_ManageStudents ..> UC_ViewStudents : <<include>>
+
+UC_ManageCourses ..> UC_AddCourse : <<include>>
+UC_ManageCourses ..> UC_AssignModules : <<include>>
+UC_ManageCourses ..> UC_ViewEnrolled : <<include>>
+
+UC_GenerateTranscript ..> UC_CalculateGPA : <<include>>
+UC_GenerateTranscript ..> UC_DisplayGrades : <<include>>
+
+UC_ManageFiles ..> UC_UploadCert : <<include>>
+UC_ManageFiles ..> UC_UploadTranscript : <<include>>
+UC_ManageFiles ..> UC_RetrieveDocs : <<include>>
+@enduml

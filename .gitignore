@@ -1,0 +1,28 @@
+# Build output
+bin/
+obj/
+
+# IDE/editor state
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# Runtime database and logs
+**/App_Data/*.db
+**/App_Data/*.db-shm
+**/App_Data/*.db-wal
+**/App_Data/*.log
+
+# Uploaded/generated files
+**/FileStorage/Certificates/*
+**/FileStorage/Transcripts/*
+**/FileStorage/StudentDocuments/*
+!**/FileStorage/Certificates/.gitkeep
+!**/FileStorage/Transcripts/.gitkeep
+!**/FileStorage/StudentDocuments/.gitkeep
+
+# OS files
+Thumbs.db
+.DS_Store

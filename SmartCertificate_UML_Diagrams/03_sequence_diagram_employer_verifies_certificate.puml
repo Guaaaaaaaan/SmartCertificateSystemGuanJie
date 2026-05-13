@@ -1,0 +1,75 @@
+@startuml
+title Sequence Diagram - Employer Verifies a Certificate
+actor Employer
+boundary "UI" as UI
+control "CertificateService" as CertificateService
+control "InputValidator" as Validator
+database "DatabaseManager" as Database
+control "FileService" as FileService
+entity "VerificationResult" as Result
+
+Employer -> UI : Enter certificateId, studentName, dateOfBirth
+note right of Employer
+  The employer provides three pieces
+  of information to verify a certificate:
+  Certificate ID, Student Name, and DOB.
+end note
+UI -> CertificateService : VerifyCertificate(certificateId, studentName, dateOfBirth)
+note over CertificateService
+  This method demonstrates **method overloading**.
+  Three overloaded versions exist:
+  1. VerifyCertificate(certId)
+  2. VerifyCertificate(certId, name)
+  3. VerifyCertificate(certId, name, dob)
+end note
+CertificateService -> Validator : ValidateCertificateInput(certificateId, studentName, dateOfBirth)
+
+alt Invalid input
+  Validator --> CertificateService : validation failed
+  CertificateService --> UI : error message
+  UI --> Employer : Display invalid input message
+else Valid input
+  Validator --> CertificateService : validation passed
+  CertificateService -> Database : GetCertificateById(certificateId)
+  note over Database
+    Uses **search algorithm** to locate
+    certificate record by unique ID.
+  end note
+  Database --> CertificateService : Certificate record / null
+
+  alt Certificate not found
+    CertificateService --> UI : VerificationResult(false, "Certificate not found")
+    UI --> Employer : Display invalid certificate result
+  else Certificate found
+    CertificateService -> Database : MatchStudentDetails(studentName, dateOfBirth)
+    note over Database
+      Cross-references student name and
+      DOB against the certificate owner's
+      record for identity verification.
+    end note
+    Database --> CertificateService : matched / not matched
+
+    alt Student details do not match
+      CertificateService --> UI : VerificationResult(false, "Student details mismatch")
+      UI --> Employer : Display invalid certificate result
+    else Student details match
+      CertificateService -> FileService : CheckTranscriptFile(transcriptPath)
+      note over FileService
+        **File I/O** operation: checks if
+        the transcript PDF exists on disk.
+      end note
+      FileService --> CertificateService : file available / missing
+
+      alt Transcript file missing
+        CertificateService --> UI : VerificationResult(true, "Certificate valid, transcript unavailable")
+        UI --> Employer : Display valid certificate without transcript access
+      else Transcript file available
+        CertificateService -> Result : Create valid result
+        Result --> CertificateService : isValid, awardTitle, completionDate, transcriptAccess
+        CertificateService --> UI : VerificationResult(true)
+        UI --> Employer : Display certificate validity, award title, completion date, transcript access
+      end
+    end
+  end
+end
+@enduml

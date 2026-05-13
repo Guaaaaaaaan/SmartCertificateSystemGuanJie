@@ -1,0 +1,171 @@
+@startuml
+title Class Diagram - Smart Certificate Verification & Student Records Management System
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+interface IVerifiable {
+  + Verify() : bool
+  + GetVerificationDetails() : string
+}
+
+interface ISearchable {
+  + SearchByName(name : string) : List
+  + SearchById(id : string) : object
+}
+
+abstract class User {
+  - userId : int
+  - fullName : string
+  - email : string
+  - passwordHash : string
+  - role : string
+  + {abstract} Login(email : string, password : string) : bool
+  + Logout() : void
+  + {abstract} GetRole() : string
+}
+
+class Student {
+  - studentId : int
+  - dateOfBirth : DateTime
+  - phone : string
+  - address : string
+  - gpa : double
+  + ViewTranscript() : Transcript
+  + VerifyOwnCertificate(certificateId : string) : bool
+}
+
+class Admin {
+  - staffId : int
+  + AddStudent(student : Student) : void
+  + UpdateStudent(student : Student) : void
+  + DeleteStudent(studentId : int) : void
+  + GenerateTranscript(studentId : int) : Transcript
+  + AddCourse(course : Course) : void
+}
+
+class Employer {
+  - companyName : string
+  - companyEmail : string
+  + VerifyCertificate(certificateId : string, studentName : string, dob : DateTime) : VerificationResult
+}
+
+class Certificate implements IVerifiable {
+  - certificateId : string
+  - awardTitle : string
+  - issueDate : DateTime
+  - completionDate : DateTime
+  - status : string
+  - filePath : string
+  + Verify() : bool
+  + GetVerificationDetails() : string
+  + IsValid() : bool
+  + GetCertificateDetails() : string
+}
+
+class Transcript {
+  - transcriptId : int
+  - generatedDate : DateTime
+  - gpa : double
+  - filePath : string
+  + CalculateGPA() : double
+  + DisplayGrades() : void
+  + GenerateTranscriptFile() : string
+}
+
+class Grade {
+  - gradeId : int
+  - moduleName : string
+  - score : double
+  - letterGrade : string
+  + CalculateGradePoint() : double
+}
+
+class Course {
+  - courseId : int
+  - courseName : string
+  - description : string
+  + AddModule(module : Module) : void
+  + ViewEnrolledStudents() : List<Student>
+}
+
+class Module {
+  - moduleId : int
+  - moduleName : string
+  - creditValue : int
+  + GetModuleInfo() : string
+}
+
+class DatabaseManager {
+  - connectionString : string
+  + OpenConnection() : void
+  + CloseConnection() : void
+  + ExecuteQuery(query : string) : DataTable
+  + ExecuteNonQuery(query : string) : int
+  + GetStudentByName(name : string) : List<Student>
+  + GetCertificateById(certificateId : string) : Certificate
+}
+
+class AuthService {
+  + Register(user : User) : bool
+  + Login(email : string, password : string) : User
+  + AssignRole(userId : int, role : string) : void
+}
+
+class CertificateService {
+  + VerifyCertificate(certId : int) : VerificationResult
+  + VerifyCertificate(certId : string, studentName : string) : VerificationResult
+  + VerifyCertificate(certId : string, studentName : string, dob : DateTime) : VerificationResult
+}
+
+class StudentService implements ISearchable {
+  + AddStudent(student : Student) : void
+  + UpdateStudent(student : Student) : void
+  + DeleteStudent(studentId : int) : void
+  + GetAllStudents() : List<Student>
+  + SearchByName(name : string) : List
+  + SearchById(id : string) : object
+  + SortByGPA() : List<Student>
+  + SortAlphabetically() : List<Student>
+}
+
+class FileService {
+  + SaveFile(sourcePath : string, targetFolder : string) : string
+  + ReadFile(filePath : string) : byte[]
+  + DeleteFile(filePath : string) : void
+}
+
+class VerificationResult {
+  - isValid : bool
+  - message : string
+  - awardTitle : string
+  - completionDate : DateTime
+  - transcriptPath : string
+  + DisplayResult() : void
+}
+
+User <|-- Student
+User <|-- Admin
+User <|-- Employer
+
+IVerifiable <|.. Certificate
+ISearchable <|.. StudentService
+
+Student "1" -- "0..*" Certificate : owns >
+Student "1" -- "0..*" Transcript : has >
+Transcript "1" *-- "1..*" Grade : contains
+Course "1" o-- "1..*" Module : aggregates
+Course "1" -- "0..*" Student : enrolls >
+Certificate "1" --> "0..1" Transcript : allows access to >
+
+AuthService --> User
+StudentService --> Student
+StudentService --> DatabaseManager
+CertificateService --> Certificate
+CertificateService --> VerificationResult
+CertificateService --> DatabaseManager
+CertificateService --> FileService
+FileService --> Certificate
+FileService --> Transcript
+DatabaseManager --> Student
+DatabaseManager --> Certificate
+@enduml

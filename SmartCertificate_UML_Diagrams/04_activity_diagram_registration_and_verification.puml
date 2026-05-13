@@ -1,0 +1,73 @@
+@startuml
+title Activity Diagram - Student Registration and Certificate Verification
+
+start
+
+partition "Student Registration" {
+  repeat
+    :Open registration page/menu;
+    :Enter full name, email, password, date of birth;
+    :Select role as Student;
+    :System validates input;
+
+    if (Input valid?) then (Yes)
+      :Check whether email already exists;
+
+      if (Email exists?) then (Yes)
+        :Display duplicate email error;
+      else (No)
+        :Create student account;
+        :Save user record to database;
+        :Display registration successful message;
+      endif
+
+    else (No)
+      :Display validation error;
+    endif
+
+  repeat while (Registration successful?) is (No)
+  -> Yes;
+}
+
+partition "Certificate Verification" {
+  :Enter certificate ID, student name, date of birth;
+  :System validates verification input;
+
+  if (Verification input valid?) then (Yes)
+    :Search certificate by certificate ID in database;
+
+    if (Certificate found?) then (Yes)
+      :Compare student name and date of birth;
+
+      if (Details match?) then (Yes)
+        :Check certificate status;
+
+        if (Certificate valid?) then (Yes)
+          :Retrieve award title and completion date;
+          :Check transcript file availability;
+
+          if (Transcript file exists?) then (Yes)
+            :Display valid certificate result with transcript access;
+          else (No)
+            :Display valid certificate result without transcript file;
+          endif
+
+        else (No)
+          :Display invalid or revoked certificate result;
+        endif
+
+      else (No)
+        :Display student details mismatch;
+      endif
+
+    else (No)
+      :Display certificate not found;
+    endif
+
+  else (No)
+    :Display invalid input message;
+  endif
+}
+
+stop
+@enduml

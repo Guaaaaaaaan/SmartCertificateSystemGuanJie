@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "Home";
+}
+
+<section class="mb-4">
+    <h1 class="display-6 fw-semibold">Smart Certificate Verification</h1>
+    <p class="lead text-muted">
+        A student records and certificate verification system built with ASP.NET Core MVC, SQLite, EF Core, custom auth, file handling, and C# OOP.
+    </p>
+</section>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Students</h2>
+                <p class="text-muted">View certificates, transcripts, grades, and GPA.</p>
+                <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Student Login</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Employers</h2>
+                <p class="text-muted">Validate academic credentials using Certificate ID, name, and DOB.</p>
+                <a class="btn btn-primary" asp-controller="Certificate" asp-action="Verify">Verify Certificate</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="h5">Administrators</h2>
+                <p class="text-muted">Manage students, courses, certificates, transcripts, and files.</p>
+                <a class="btn btn-outline-primary" asp-controller="Account" asp-action="Login">Admin Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-info mt-4">
+    Demo accounts: <strong>admin@example.com / Admin123!</strong>,
+    <strong>student@example.com / Student123!</strong>,
+    <strong>employer@example.com / Employer123!</strong>
+</div>

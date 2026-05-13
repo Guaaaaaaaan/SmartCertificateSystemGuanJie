@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SmartCertificateSystem.Tests/SmartCertificateSystem.Tests.csproj" />
+  <Project Path="SmartCertificateSystem/SmartCertificateSystem.csproj" />
+</Solution>

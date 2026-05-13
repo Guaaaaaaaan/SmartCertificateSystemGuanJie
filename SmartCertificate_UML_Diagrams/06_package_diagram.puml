@@ -1,0 +1,61 @@
+@startuml
+title Package Diagram - Smart Certificate Verification & Student Records Management System
+
+package "UI" {
+  class Program
+  class MainMenu
+  class LoginMenu
+  class AdminMenu
+  class StudentMenu
+  class EmployerMenu
+}
+
+package "Models" {
+  class User
+  class Student
+  class Admin
+  class Employer
+  class Certificate
+  class Transcript
+  class Grade
+  class Course
+  class Module
+  class VerificationResult
+}
+
+package "Services" {
+  class AuthService
+  class StudentService
+  class CertificateService
+  class TranscriptService
+  class CourseService
+  class FileService
+  class SearchSortService
+}
+
+package "Database" {
+  class DatabaseManager
+  class SqlQueries
+}
+
+package "Utilities" {
+  class InputValidator
+  class ExceptionLogger
+  class GpaCalculator
+}
+
+package "FileStorage" {
+  class CertificateFolder
+  class TranscriptFolder
+  class StudentDocumentFolder
+}
+
+UI ..> Services : calls
+Services ..> Models : uses
+Services ..> Database : reads/writes
+Services ..> Utilities : validates/calculates
+Services ..> FileStorage : stores/retrieves files
+Database ..> Models : maps records
+Utilities ..> Models : validates model data
+
+@enduml

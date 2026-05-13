@@ -1,0 +1,62 @@
+@model StudentsIndexViewModel
+@{
+    ViewData["Title"] = "Students";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Student Records</h1>
+    <a class="btn btn-primary" asp-action="CreateStudent">Add Student</a>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-5">
+        <input name="search" value="@Model.Search" class="form-control" placeholder="Search student by name" />
+    </div>
+    <div class="col-md-3">
+        <select name="sort" class="form-select">
+            <option value="name" selected="@(Model.Sort == "name")">Sort alphabetically</option>
+            <option value="gpa" selected="@(Model.Sort == "gpa")">Sort by GPA</option>
+        </select>
+    </div>
+    <div class="col-md-4">
+        <button class="btn btn-outline-primary" type="submit">Apply</button>
+        <a class="btn btn-outline-secondary" asp-action="Students">Reset</a>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>DOB</th>
+                <th>GPA</th>
+                <th>Certificates</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var student in Model.Students)
+        {
+            <tr>
+                <td>@student.FullName<br /><span class="text-muted small">ID @student.StudentId</span></td>
+                <td>@student.Email</td>
+                <td>@student.DateOfBirth.ToString("yyyy-MM-dd")</td>
+                <td>@student.GPA.ToString("0.00")</td>
+                <td>@student.Certificates.Count</td>
+                <td class="text-end">
+                    <form asp-action="GenerateTranscript" method="post" class="d-inline">
+                        <input type="hidden" name="studentId" value="@student.UserId" />
+                        <button class="btn btn-sm btn-outline-success" type="submit">Generate Transcript</button>
+                    </form>
+                    <a class="btn btn-sm btn-outline-primary" asp-action="EditStudent" asp-route-id="@student.UserId">Edit</a>
+                    <form asp-action="DeleteStudent" asp-route-id="@student.UserId" method="post" class="d-inline">
+                        <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

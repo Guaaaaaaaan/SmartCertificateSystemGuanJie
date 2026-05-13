@@ -1,0 +1,81 @@
+@model CourseManagementViewModel
+@{
+    ViewData["Title"] = "Courses";
+}
+
+<h1 class="h3 mb-3">Course Management</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-lg-4">
+        <form asp-action="AddCourse" method="post" class="card card-body h-100">
+            <h2 class="h5">Add Course</h2>
+            <label asp-for="CourseForm.CourseName" class="form-label"></label>
+            <input name="CourseName" class="form-control mb-2" />
+            <label asp-for="CourseForm.Description" class="form-label"></label>
+            <textarea name="Description" class="form-control mb-3"></textarea>
+            <button class="btn btn-primary" type="submit">Add Course</button>
+        </form>
+    </div>
+    <div class="col-lg-4">
+        <form asp-action="AddModule" method="post" class="card card-body h-100">
+            <h2 class="h5">Assign Module</h2>
+            <select name="CourseId" class="form-select mb-2">
+                @foreach (var course in Model.Courses)
+                {
+                    <option value="@course.CourseId">@course.CourseName</option>
+                }
+            </select>
+            <input name="ModuleName" class="form-control mb-2" placeholder="Module name" />
+            <input name="CreditValue" class="form-control mb-3" type="number" min="1" max="10" value="3" />
+            <button class="btn btn-primary" type="submit">Assign Module</button>
+        </form>
+    </div>
+    <div class="col-lg-4">
+        <form asp-action="EnrollStudent" method="post" class="card card-body h-100">
+            <h2 class="h5">Enroll Student</h2>
+            <select name="CourseId" class="form-select mb-2">
+                @foreach (var course in Model.Courses)
+                {
+                    <option value="@course.CourseId">@course.CourseName</option>
+                }
+            </select>
+            <select name="StudentId" class="form-select mb-3">
+                @foreach (var student in Model.Students)
+                {
+                    <option value="@student.UserId">@student.FullName</option>
+                }
+            </select>
+            <button class="btn btn-primary" type="submit">Enroll</button>
+        </form>
+    </div>
+</div>
+
+@foreach (var course in Model.Courses)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h2 class="h5">@course.CourseName</h2>
+            <p class="text-muted">@course.Description</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="h6">Modules</h3>
+                    <ul>
+                    @foreach (var module in course.Modules)
+                    {
+                        <li>@module.GetModuleInfo()</li>
+                    }
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="h6">Enrolled Students</h3>
+                    <ul>
+                    @foreach (var enrollment in course.Enrollments)
+                    {
+                        <li>@enrollment.Student?.FullName</li>
+                    }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+}

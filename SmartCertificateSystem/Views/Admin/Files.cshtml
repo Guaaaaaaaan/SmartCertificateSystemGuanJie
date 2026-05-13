@@ -1,0 +1,46 @@
+@model FileUploadViewModel
+@{
+    ViewData["Title"] = "Files";
+}
+
+<h1 class="h3 mb-3">File Management</h1>
+
+<form asp-action="UploadFile" method="post" enctype="multipart/form-data" class="card card-body">
+    <div class="row g-3">
+        <div class="col-md-3">
+            <label asp-for="Category" class="form-label"></label>
+            <select asp-for="Category" class="form-select">
+                <option value="Certificate">Certificate PDF</option>
+                <option value="Transcript">Transcript File</option>
+                <option value="StudentDocument">Student Document</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="StudentId" class="form-label">Student</label>
+            <select asp-for="StudentId" asp-items="Model.Students" class="form-select"></select>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="CertificateId" class="form-label">Certificate</label>
+            <select asp-for="CertificateId" asp-items="Model.Certificates" class="form-select">
+                <option value="">Not applicable</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label asp-for="TranscriptId" class="form-label">Transcript</label>
+            <select asp-for="TranscriptId" asp-items="Model.Transcripts" class="form-select">
+                <option value="">Not applicable</option>
+            </select>
+        </div>
+        <div class="col-md-9">
+            <label asp-for="File" class="form-label"></label>
+            <input asp-for="File" type="file" class="form-control" />
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-primary w-100" type="submit">Upload</button>
+        </div>
+    </div>
+</form>
+
+<div class="alert alert-secondary mt-3">
+    Files are stored under <code>FileStorage/Certificates</code>, <code>FileStorage/Transcripts</code>, and <code>FileStorage/StudentDocuments</code>.
+</div>

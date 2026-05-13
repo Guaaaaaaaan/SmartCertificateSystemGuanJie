@@ -1,0 +1,11 @@
+@model StudentFormViewModel
+@{
+    ViewData["Title"] = "Add Student";
+}
+
+<h1 class="h3 mb-3">Add Student</h1>
+<partial name="_StudentForm" model="Model" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

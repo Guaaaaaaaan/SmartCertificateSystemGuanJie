@@ -1,0 +1,66 @@
+@model CertificatesIndexViewModel
+@{
+    ViewData["Title"] = "Certificates";
+}
+
+<h1 class="h3 mb-3">Certificate Records</h1>
+
+<form asp-action="CreateCertificate" method="post" class="card card-body mb-4">
+    <h2 class="h5">Create Certificate</h2>
+    <div class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label">Student</label>
+            <select name="StudentId" class="form-select" asp-items="Model.CreateForm.Students"></select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Certificate ID</label>
+            <input name="CertificateId" class="form-control" placeholder="SC-2026-0003" />
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Award Title</label>
+            <input name="AwardTitle" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Completion Date</label>
+            <input name="CompletionDate" class="form-control" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+        </div>
+    </div>
+    <button class="btn btn-primary mt-3" type="submit">Create</button>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Certificate ID</th>
+                <th>Student</th>
+                <th>Award</th>
+                <th>Status</th>
+                <th>Completion</th>
+                <th>Files</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var cert in Model.Certificates)
+        {
+            <tr>
+                <td>@cert.CertificateId</td>
+                <td>@cert.Student?.FullName</td>
+                <td>@cert.AwardTitle</td>
+                <td><span class="badge bg-@(cert.Status == CertificateStatuses.Valid ? "success" : "danger")">@cert.Status</span></td>
+                <td>@cert.CompletionDate.ToString("yyyy-MM-dd")</td>
+                <td>
+                    @if (!string.IsNullOrWhiteSpace(cert.FilePath))
+                    {
+                        <span class="badge bg-secondary">certificate file</span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(cert.Transcript?.FilePath))
+                    {
+                        <span class="badge bg-secondary">transcript linked</span>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
