@@ -60,6 +60,8 @@ public class CourseFormViewModel
 
 public class ModuleFormViewModel
 {
+    public int ModuleId { get; set; }
+
     [Required]
     public int CourseId { get; set; }
 

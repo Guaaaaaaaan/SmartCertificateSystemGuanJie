@@ -27,12 +27,18 @@ public class CertificateController(CertificateService certificateService, FileSe
         return View(model);
     }
 
-    public async Task<IActionResult> DownloadTranscript(string path)
+    public async Task<IActionResult> DownloadTranscript(int id)
     {
         try
         {
-            var bytes = _fileService.ReadFile(path);
-            return File(bytes, "application/octet-stream", Path.GetFileName(path));
+            var transcript = await _certificateService.GetTranscriptForValidCertificateAsync(id);
+            if (transcript?.FilePath is null)
+            {
+                return NotFound();
+            }
+
+            var bytes = _fileService.ReadStoredFile(transcript.FilePath);
+            return File(bytes, "application/octet-stream", Path.GetFileName(transcript.FilePath));
         }
         catch (Exception ex)
         {

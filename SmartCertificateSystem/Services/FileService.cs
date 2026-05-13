@@ -66,6 +66,17 @@ public class FileService
         return File.ReadAllBytes(absolutePath);
     }
 
+    public byte[] ReadStoredFile(string filePath)
+    {
+        var absolutePath = GetSafeStoredAbsolutePath(filePath);
+        if (!File.Exists(absolutePath))
+        {
+            throw new FileNotFoundException("The requested file is missing.", absolutePath);
+        }
+
+        return File.ReadAllBytes(absolutePath);
+    }
+
     public void DeleteFile(string filePath)
     {
         var absolutePath = GetAbsolutePath(filePath);
@@ -121,4 +132,25 @@ public class FileService
 
     public string GetAbsolutePath(string filePath) =>
         Path.IsPathRooted(filePath) ? filePath : Path.Combine(_contentRootPath, filePath);
+
+    private string GetSafeStoredAbsolutePath(string filePath)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+        {
+            throw new InvalidOperationException("File path is required.");
+        }
+
+        var storageRoot = Path.GetFullPath(Path.Combine(_contentRootPath, "FileStorage"));
+        var candidate = Path.GetFullPath(Path.IsPathRooted(filePath)
+            ? filePath
+            : Path.Combine(_contentRootPath, filePath));
+
+        if (!candidate.StartsWith(storageRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+            && !candidate.Equals(storageRoot, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new UnauthorizedAccessException("Only files inside FileStorage can be downloaded.");
+        }
+
+        return candidate;
+    }
 }

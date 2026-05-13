@@ -226,7 +226,8 @@ public record VerificationResult(
     string Message,
     string? AwardTitle,
     DateTime? CompletionDate,
-    string? TranscriptPath)
+    string? TranscriptPath,
+    int? TranscriptId = null)
 {
     public string DisplayResult() => IsValid ? $"Valid certificate: {AwardTitle}" : Message;
 }

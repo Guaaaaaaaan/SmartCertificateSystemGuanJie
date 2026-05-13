@@ -95,6 +95,7 @@ public class ServiceTests : IDisposable
         Assert.True(result.IsValid);
         Assert.Equal("Diploma in Software Development", result.AwardTitle);
         Assert.NotNull(result.TranscriptPath);
+        Assert.NotNull(result.TranscriptId);
     }
 
     [Fact]
@@ -162,6 +163,89 @@ public class ServiceTests : IDisposable
         Assert.Equal(byName.OrderBy(s => s.FullName).Select(s => s.UserId), byName.Select(s => s.UserId));
         Assert.Equal(byGpa.OrderByDescending(s => s.GPA).Select(s => s.UserId), byGpa.Select(s => s.UserId));
         Assert.NotNull(cert);
+    }
+
+    [Fact]
+    public async Task Course_service_can_update_and_delete_courses_and_modules()
+    {
+        var service = new CourseService(_db);
+        var course = await service.AddCourse(new CourseFormViewModel
+        {
+            CourseName = "Cybersecurity Basics",
+            Description = "Security fundamentals"
+        });
+        await service.AddModule(new ModuleFormViewModel
+        {
+            CourseId = course.CourseId,
+            ModuleName = "Secure Coding",
+            CreditValue = 2
+        });
+        var module = await _db.Modules.FirstAsync(m => m.CourseId == course.CourseId);
+
+        await service.UpdateCourse(new CourseFormViewModel
+        {
+            CourseId = course.CourseId,
+            CourseName = "Cybersecurity Essentials",
+            Description = "Updated"
+        });
+        await service.UpdateModule(new ModuleFormViewModel
+        {
+            ModuleId = module.ModuleId,
+            CourseId = course.CourseId,
+            ModuleName = "Threat Modelling",
+            CreditValue = 3
+        });
+
+        var updated = await _db.Courses.Include(c => c.Modules).FirstAsync(c => c.CourseId == course.CourseId);
+        Assert.Equal("Cybersecurity Essentials", updated.CourseName);
+        Assert.Equal("Threat Modelling", updated.Modules.Single().ModuleName);
+
+        await service.DeleteModule(module.ModuleId);
+        Assert.False(await _db.Modules.AnyAsync(m => m.ModuleId == module.ModuleId));
+
+        await service.DeleteCourse(course.CourseId);
+        Assert.False(await _db.Courses.AnyAsync(c => c.CourseId == course.CourseId));
+    }
+
+    [Fact]
+    public void File_service_rejects_downloads_outside_filestorage()
+    {
+        var fileService = new FileService(_root, _validator);
+        var outsideFile = Path.Combine(_root, "outside.txt");
+        File.WriteAllText(outsideFile, "outside");
+
+        Assert.Throws<UnauthorizedAccessException>(() => fileService.ReadStoredFile(outsideFile));
+    }
+
+    [Fact]
+    public async Task Valid_certificate_transcript_lookup_rejects_revoked_certificate()
+    {
+        var student = await _db.Students.FirstAsync();
+        var transcript = new Transcript
+        {
+            StudentId = student.UserId,
+            GPA = 2.0,
+            FilePath = "FileStorage/Transcripts/revoked.pdf"
+        };
+        _db.Transcripts.Add(transcript);
+        await _db.SaveChangesAsync();
+
+        _db.Certificates.Add(new Certificate
+        {
+            CertificateId = "SC-2026-REVOKED",
+            StudentId = student.UserId,
+            TranscriptId = transcript.TranscriptId,
+            AwardTitle = "Revoked Award",
+            CompletionDate = new DateTime(2026, 1, 1),
+            IssueDate = new DateTime(2026, 1, 2),
+            Status = CertificateStatuses.Revoked
+        });
+        await _db.SaveChangesAsync();
+        var service = BuildCertificateService();
+
+        var result = await service.GetTranscriptForValidCertificateAsync(transcript.TranscriptId);
+
+        Assert.Null(result);
     }
 
     private CertificateService BuildCertificateService()

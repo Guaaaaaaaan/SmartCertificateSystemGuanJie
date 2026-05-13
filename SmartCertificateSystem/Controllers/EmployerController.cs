@@ -4,15 +4,11 @@ using SmartCertificateSystem.Utilities;
 
 namespace SmartCertificateSystem.Controllers;
 
+[AuthorizeRole(UserRoles.Employer)]
 public class EmployerController : Controller
 {
     public IActionResult Index()
     {
-        if (HttpContext.Session.GetString(SessionKeys.Role) != UserRoles.Employer)
-        {
-            return RedirectToAction("Login", "Account");
-        }
-
         return View();
     }
 }

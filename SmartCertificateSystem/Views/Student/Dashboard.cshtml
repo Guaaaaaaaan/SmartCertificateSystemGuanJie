@@ -77,7 +77,7 @@
             </ul>
             @if (!string.IsNullOrWhiteSpace(transcript.FilePath))
             {
-                <a class="btn btn-sm btn-outline-primary" asp-action="Download" asp-route-path="@transcript.FilePath">Download transcript</a>
+                <a class="btn btn-sm btn-outline-primary" asp-action="DownloadTranscript" asp-route-id="@transcript.TranscriptId">Download transcript</a>
             }
         </div>
     </div>

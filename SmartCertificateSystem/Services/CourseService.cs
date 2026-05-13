@@ -29,6 +29,25 @@ public class CourseService(AppDbContext db)
         return course;
     }
 
+    public async Task UpdateCourse(CourseFormViewModel model)
+    {
+        var course = await _db.Courses.FirstOrDefaultAsync(c => c.CourseId == model.CourseId)
+            ?? throw new InvalidOperationException("Course not found.");
+
+        course.CourseName = model.CourseName.Trim();
+        course.Description = model.Description.Trim();
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task DeleteCourse(int courseId)
+    {
+        var course = await _db.Courses.FirstOrDefaultAsync(c => c.CourseId == courseId)
+            ?? throw new InvalidOperationException("Course not found.");
+
+        _db.Courses.Remove(course);
+        await _db.SaveChangesAsync();
+    }
+
     public async Task AddModule(ModuleFormViewModel model)
     {
         if (!await _db.Courses.AnyAsync(c => c.CourseId == model.CourseId))
@@ -43,6 +62,31 @@ public class CourseService(AppDbContext db)
             CreditValue = model.CreditValue
         });
 
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task UpdateModule(ModuleFormViewModel model)
+    {
+        var module = await _db.Modules.FirstOrDefaultAsync(m => m.ModuleId == model.ModuleId)
+            ?? throw new InvalidOperationException("Module not found.");
+
+        if (!await _db.Courses.AnyAsync(c => c.CourseId == model.CourseId))
+        {
+            throw new InvalidOperationException("Course not found.");
+        }
+
+        module.CourseId = model.CourseId;
+        module.ModuleName = model.ModuleName.Trim();
+        module.CreditValue = model.CreditValue;
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task DeleteModule(int moduleId)
+    {
+        var module = await _db.Modules.FirstOrDefaultAsync(m => m.ModuleId == moduleId)
+            ?? throw new InvalidOperationException("Module not found.");
+
+        _db.Modules.Remove(module);
         await _db.SaveChangesAsync();
     }
 

@@ -46,9 +46,9 @@
                             <dd class="col-sm-8">@Model.Result.CompletionDate?.ToString("yyyy-MM-dd")</dd>
                             <dt class="col-sm-4">Transcript Access</dt>
                             <dd class="col-sm-8">
-                                @if (!string.IsNullOrWhiteSpace(Model.Result.TranscriptPath))
+                                @if (Model.Result.TranscriptId is not null)
                                 {
-                                    <a asp-action="DownloadTranscript" asp-route-path="@Model.Result.TranscriptPath">Download transcript</a>
+                                    <a asp-action="DownloadTranscript" asp-route-id="@Model.Result.TranscriptId">Download transcript</a>
                                 }
                                 else
                                 {

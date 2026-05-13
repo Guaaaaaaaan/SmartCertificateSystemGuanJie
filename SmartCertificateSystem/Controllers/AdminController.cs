@@ -9,6 +9,7 @@ using SmartCertificateSystem.Utilities;
 
 namespace SmartCertificateSystem.Controllers;
 
+[AuthorizeRole(UserRoles.Admin)]
 public class AdminController(
     AppDbContext db,
     StudentService studentService,
@@ -32,8 +33,6 @@ public class AdminController(
 
     public async Task<IActionResult> Index()
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
-
         var model = new AdminDashboardViewModel
         {
             StudentCount = await _db.Students.CountAsync(),
@@ -47,8 +46,6 @@ public class AdminController(
 
     public async Task<IActionResult> Students(string? search, string sort = "name")
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
-
         List<Student> students;
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -69,7 +66,6 @@ public class AdminController(
     [HttpGet]
     public IActionResult CreateStudent()
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
         return View(new StudentFormViewModel());
     }
 
@@ -77,7 +73,6 @@ public class AdminController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateStudent(StudentFormViewModel model)
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
         if (!ModelState.IsValid) return View(model);
 
         try
@@ -97,8 +92,6 @@ public class AdminController(
     [HttpGet]
     public async Task<IActionResult> EditStudent(int id)
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
-
         var student = await _studentService.GetStudentAsync(id);
         if (student is null) return NotFound();
 
@@ -118,7 +111,6 @@ public class AdminController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditStudent(StudentFormViewModel model)
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
         if (!ModelState.IsValid) return View(model);
 
         try
@@ -139,8 +131,6 @@ public class AdminController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteStudent(int id)
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
-
         try
         {
             await _studentService.DeleteStudentAsync(id);
@@ -157,7 +147,6 @@ public class AdminController(
 
     public async Task<IActionResult> Courses()
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
         return View(new CourseManagementViewModel
         {
             Courses = await _courseService.GetCoursesAsync(),
@@ -169,8 +158,6 @@ public class AdminController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddCourse(CourseFormViewModel model)
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
-
         try
         {
             if (ModelState.IsValid) await _courseService.AddCourse(model);
@@ -187,10 +174,44 @@ public class AdminController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateCourse(CourseFormViewModel model)
+    {
+        try
+        {
+            if (ModelState.IsValid) await _courseService.UpdateCourse(model);
+            TempData["Success"] = "Course updated.";
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogAsync(ex);
+            TempData["Error"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Courses));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteCourse(int id)
+    {
+        try
+        {
+            await _courseService.DeleteCourse(id);
+            TempData["Success"] = "Course deleted.";
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogAsync(ex);
+            TempData["Error"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Courses));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddModule(ModuleFormViewModel model)
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
-
         try
         {
             if (ModelState.IsValid) await _courseService.AddModule(model);
@@ -207,10 +228,44 @@ public class AdminController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateModule(ModuleFormViewModel model)
+    {
+        try
+        {
+            if (ModelState.IsValid) await _courseService.UpdateModule(model);
+            TempData["Success"] = "Module updated.";
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogAsync(ex);
+            TempData["Error"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Courses));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteModule(int id)
+    {
+        try
+        {
+            await _courseService.DeleteModule(id);
+            TempData["Success"] = "Module deleted.";
+        }
+        catch (Exception ex)
+        {
+            await _logger.LogAsync(ex);
+            TempData["Error"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Courses));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> EnrollStudent(EnrollmentFormViewModel model)
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
-
         try
         {
             if (ModelState.IsValid) await _courseService.EnrollStudent(model);
@@ -227,8 +282,6 @@ public class AdminController(
 
     public async Task<IActionResult> Certificates()
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
-
         return View(new CertificatesIndexViewModel
         {
             Certificates = await _certificateService.GetCertificatesAsync(),
@@ -240,8 +293,6 @@ public class AdminController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateCertificate(CertificateCreateViewModel model)
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
-
         try
         {
             if (ModelState.IsValid)
@@ -261,7 +312,6 @@ public class AdminController(
 
     public async Task<IActionResult> Files()
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
         return View(await BuildFileUploadModel());
     }
 
@@ -269,8 +319,6 @@ public class AdminController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UploadFile(FileUploadViewModel model)
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
-
         try
         {
             if (model.File is null)
@@ -308,8 +356,6 @@ public class AdminController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> GenerateTranscript(int studentId)
     {
-        if (!IsAdmin()) return RedirectToAction("Login", "Account");
-
         try
         {
             await _transcriptService.GenerateTranscript(studentId);
@@ -323,8 +369,6 @@ public class AdminController(
 
         return RedirectToAction(nameof(Students));
     }
-
-    private bool IsAdmin() => HttpContext.Session.GetString(SessionKeys.Role) == UserRoles.Admin;
 
     private async Task<FileUploadViewModel> BuildFileUploadModel() => new()
     {

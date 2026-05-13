@@ -23,6 +23,11 @@ public class StudentService(AppDbContext db) : ISearchable
             .Include(s => s.Transcripts).ThenInclude(t => t.Grades)
             .FirstOrDefaultAsync(s => s.UserId == userId);
 
+    public async Task<Transcript?> GetOwnedTranscriptAsync(int studentUserId, int transcriptId) =>
+        await _db.Transcripts
+            .Include(t => t.Grades)
+            .FirstOrDefaultAsync(t => t.StudentId == studentUserId && t.TranscriptId == transcriptId);
+
     public async Task<Student> AddStudentAsync(StudentFormViewModel model)
     {
         if (await _db.Users.AnyAsync(u => u.Email == model.Email.Trim().ToLowerInvariant()))

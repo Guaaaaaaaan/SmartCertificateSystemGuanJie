@@ -54,19 +54,50 @@
 {
     <div class="card mb-3">
         <div class="card-body">
-            <h2 class="h5">@course.CourseName</h2>
-            <p class="text-muted">@course.Description</p>
-            <div class="row">
-                <div class="col-md-6">
-                    <h3 class="h6">Modules</h3>
-                    <ul>
-                    @foreach (var module in course.Modules)
-                    {
-                        <li>@module.GetModuleInfo()</li>
-                    }
-                    </ul>
+            <form asp-action="UpdateCourse" method="post" class="row g-2 align-items-end mb-3">
+                <input type="hidden" name="CourseId" value="@course.CourseId" />
+                <div class="col-md-4">
+                    <label class="form-label">Course Name</label>
+                    <input name="CourseName" value="@course.CourseName" class="form-control" />
                 </div>
                 <div class="col-md-6">
+                    <label class="form-label">Description</label>
+                    <input name="Description" value="@course.Description" class="form-control" />
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button class="btn btn-outline-primary w-100" type="submit">Save</button>
+                </div>
+            </form>
+            <form asp-action="DeleteCourse" asp-route-id="@course.CourseId" method="post" class="mb-3">
+                <button class="btn btn-sm btn-outline-danger" type="submit">Delete Course</button>
+            </form>
+
+            <div class="row">
+                <div class="col-lg-7">
+                    <h3 class="h6">Modules</h3>
+                    @foreach (var module in course.Modules)
+                    {
+                        <form asp-action="UpdateModule" method="post" class="row g-2 align-items-center mb-2">
+                            <input type="hidden" name="ModuleId" value="@module.ModuleId" />
+                            <input type="hidden" name="CourseId" value="@course.CourseId" />
+                            <div class="col-md-6">
+                                <input name="ModuleName" value="@module.ModuleName" class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-2">
+                                <input name="CreditValue" value="@module.CreditValue" class="form-control form-control-sm" type="number" min="1" max="10" />
+                            </div>
+                            <div class="col-md-4 d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary" type="submit">Save</button>
+                                <button class="btn btn-sm btn-outline-danger"
+                                        type="submit"
+                                        formaction="@Url.Action("DeleteModule", "Admin", new { id = module.ModuleId })">
+                                    Delete
+                                </button>
+                            </div>
+                        </form>
+                    }
+                </div>
+                <div class="col-lg-5">
                     <h3 class="h6">Enrolled Students</h3>
                     <ul>
                     @foreach (var enrollment in course.Enrollments)

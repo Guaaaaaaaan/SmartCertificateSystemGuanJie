@@ -6,6 +6,7 @@ using SmartCertificateSystem.Utilities;
 
 namespace SmartCertificateSystem.Controllers;
 
+[AuthorizeRole(UserRoles.Student)]
 public class StudentController(StudentService studentService, FileService fileService, ExceptionLogger logger) : Controller
 {
     private readonly StudentService _studentService = studentService;
@@ -14,8 +15,6 @@ public class StudentController(StudentService studentService, FileService fileSe
 
     public async Task<IActionResult> Dashboard()
     {
-        if (!IsStudent()) return RedirectToAction("Login", "Account");
-
         var userId = HttpContext.Session.GetInt32(SessionKeys.UserId)!.Value;
         var student = await _studentService.GetStudentAsync(userId);
         if (student is null) return RedirectToAction("Login", "Account");
@@ -28,14 +27,19 @@ public class StudentController(StudentService studentService, FileService fileSe
         });
     }
 
-    public async Task<IActionResult> Download(string path)
+    public async Task<IActionResult> DownloadTranscript(int id)
     {
-        if (!IsStudent()) return RedirectToAction("Login", "Account");
-
         try
         {
-            var bytes = _fileService.ReadFile(path);
-            return File(bytes, "application/octet-stream", Path.GetFileName(path));
+            var userId = HttpContext.Session.GetInt32(SessionKeys.UserId)!.Value;
+            var transcript = await _studentService.GetOwnedTranscriptAsync(userId, id);
+            if (transcript?.FilePath is null)
+            {
+                return NotFound();
+            }
+
+            var bytes = _fileService.ReadStoredFile(transcript.FilePath);
+            return File(bytes, "application/octet-stream", Path.GetFileName(transcript.FilePath));
         }
         catch (Exception ex)
         {
@@ -44,6 +48,4 @@ public class StudentController(StudentService studentService, FileService fileSe
             return RedirectToAction(nameof(Dashboard));
         }
     }
-
-    private bool IsStudent() => HttpContext.Session.GetString(SessionKeys.Role) == UserRoles.Student;
 }

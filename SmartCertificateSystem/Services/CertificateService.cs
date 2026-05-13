@@ -114,6 +114,12 @@ public class CertificateService(AppDbContext db, FileService fileService, InputV
             .Include(c => c.Student)
             .FirstOrDefaultAsync(c => c.CertificateId == certificateId.Trim());
 
+    public async Task<Transcript?> GetTranscriptForValidCertificateAsync(int transcriptId) =>
+        await _db.Transcripts
+            .FirstOrDefaultAsync(t =>
+                t.TranscriptId == transcriptId &&
+                _db.Certificates.Any(c => c.TranscriptId == t.TranscriptId && c.Status == CertificateStatuses.Valid));
+
     private VerificationResult BuildResult(Certificate certificate, Student? student, bool validateIdentity)
     {
         if (student is null && validateIdentity)
@@ -132,7 +138,13 @@ public class CertificateService(AppDbContext db, FileService fileService, InputV
             ? "Certificate valid. Transcript access is available."
             : "Certificate valid, but transcript file is unavailable.";
 
-        return new VerificationResult(true, message, certificate.AwardTitle, certificate.CompletionDate, transcriptAvailable ? transcriptPath : null);
+        return new VerificationResult(
+            true,
+            message,
+            certificate.AwardTitle,
+            certificate.CompletionDate,
+            transcriptAvailable ? transcriptPath : null,
+            transcriptAvailable ? certificate.Transcript?.TranscriptId : null);
     }
 
     private static bool MatchesName(Student? student, string studentName) =>
