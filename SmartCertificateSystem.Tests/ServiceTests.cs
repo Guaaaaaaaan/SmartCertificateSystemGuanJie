@@ -132,7 +132,39 @@ public class ServiceTests : IDisposable
 
         Assert.True(result.IsValid);
         Assert.Null(result.TranscriptPath);
-        Assert.Contains("unavailable", result.Message);
+        Assert.NotNull(result.TranscriptId);
+        Assert.Contains("generated on demand", result.Message);
+    }
+
+    [Fact]
+    public void Transcript_pdf_service_generates_pdf_from_transcript_record()
+    {
+        var transcript = new Transcript
+        {
+            TranscriptId = 42,
+            GeneratedDate = new DateTime(2026, 5, 18),
+            GPA = 3.83,
+            StudentId = 1,
+            Student = new Student
+            {
+                FullName = "Alan Tan",
+                StudentId = 2026001,
+                DateOfBirth = new DateTime(2000, 5, 15)
+            },
+            Grades =
+            [
+                new Grade { ModuleName = "Object-Oriented Design", Score = 88, LetterGrade = "A", CreditValue = 4 },
+                new Grade { ModuleName = "C# Programming", Score = 82, LetterGrade = "B+", CreditValue = 4 }
+            ]
+        };
+
+        var bytes = new TranscriptPdfService().GenerateTranscriptPdf(transcript);
+        var pdfText = System.Text.Encoding.ASCII.GetString(bytes);
+
+        Assert.StartsWith("%PDF-1.4", pdfText);
+        Assert.Contains("Alan Tan", pdfText);
+        Assert.Contains("Object-Oriented Design", pdfText);
+        Assert.Contains("%%EOF", pdfText);
     }
 
     [Fact]

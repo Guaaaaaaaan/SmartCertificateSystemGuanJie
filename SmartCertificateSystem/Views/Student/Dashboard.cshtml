@@ -75,10 +75,7 @@
                 <li>@grade.ModuleName: @grade.Score.ToString("0") / @grade.LetterGrade</li>
             }
             </ul>
-            @if (!string.IsNullOrWhiteSpace(transcript.FilePath))
-            {
-                <a class="btn btn-sm btn-outline-primary" asp-action="DownloadTranscript" asp-route-id="@transcript.TranscriptId">Download transcript</a>
-            }
+            <a class="btn btn-sm btn-outline-primary" asp-action="DownloadTranscript" asp-route-id="@transcript.TranscriptId">Download transcript</a>
         </div>
     </div>
 }

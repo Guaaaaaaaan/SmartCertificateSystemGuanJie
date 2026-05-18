@@ -25,6 +25,7 @@ public class StudentService(AppDbContext db) : ISearchable
 
     public async Task<Transcript?> GetOwnedTranscriptAsync(int studentUserId, int transcriptId) =>
         await _db.Transcripts
+            .Include(t => t.Student)
             .Include(t => t.Grades)
             .FirstOrDefaultAsync(t => t.StudentId == studentUserId && t.TranscriptId == transcriptId);
 

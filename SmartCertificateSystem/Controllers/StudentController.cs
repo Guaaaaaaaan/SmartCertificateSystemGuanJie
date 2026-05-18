@@ -7,10 +7,15 @@ using SmartCertificateSystem.Utilities;
 namespace SmartCertificateSystem.Controllers;
 
 [AuthorizeRole(UserRoles.Student)]
-public class StudentController(StudentService studentService, FileService fileService, ExceptionLogger logger) : Controller
+public class StudentController(
+    StudentService studentService,
+    FileService fileService,
+    TranscriptPdfService transcriptPdfService,
+    ExceptionLogger logger) : Controller
 {
     private readonly StudentService _studentService = studentService;
     private readonly FileService _fileService = fileService;
+    private readonly TranscriptPdfService _transcriptPdfService = transcriptPdfService;
     private readonly ExceptionLogger _logger = logger;
 
     public async Task<IActionResult> Dashboard()
@@ -33,13 +38,19 @@ public class StudentController(StudentService studentService, FileService fileSe
         {
             var userId = HttpContext.Session.GetInt32(SessionKeys.UserId)!.Value;
             var transcript = await _studentService.GetOwnedTranscriptAsync(userId, id);
-            if (transcript?.FilePath is null)
+            if (transcript is null)
             {
                 return NotFound();
             }
 
-            var bytes = _fileService.ReadStoredFile(transcript.FilePath);
-            return File(bytes, "application/octet-stream", Path.GetFileName(transcript.FilePath));
+            if (!string.IsNullOrWhiteSpace(transcript.FilePath) && _fileService.FileExists(transcript.FilePath))
+            {
+                var storedBytes = _fileService.ReadStoredFile(transcript.FilePath);
+                return File(storedBytes, "application/pdf", Path.GetFileName(transcript.FilePath));
+            }
+
+            var generatedBytes = _transcriptPdfService.GenerateTranscriptPdf(transcript);
+            return File(generatedBytes, "application/pdf", _transcriptPdfService.BuildTranscriptFileName(transcript));
         }
         catch (Exception ex)
         {

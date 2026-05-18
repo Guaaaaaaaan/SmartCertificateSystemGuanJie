@@ -116,6 +116,8 @@ public class CertificateService(AppDbContext db, FileService fileService, InputV
 
     public async Task<Transcript?> GetTranscriptForValidCertificateAsync(int transcriptId) =>
         await _db.Transcripts
+            .Include(t => t.Student)
+            .Include(t => t.Grades)
             .FirstOrDefaultAsync(t =>
                 t.TranscriptId == transcriptId &&
                 _db.Certificates.Any(c => c.TranscriptId == t.TranscriptId && c.Status == CertificateStatuses.Valid));
@@ -132,19 +134,23 @@ public class CertificateService(AppDbContext db, FileService fileService, InputV
             return new VerificationResult(false, $"Certificate is {certificate.Status}.", null, null, null);
         }
 
-        var transcriptPath = certificate.Transcript?.FilePath;
-        var transcriptAvailable = _fileService.FileExists(transcriptPath);
-        var message = transcriptAvailable
-            ? "Certificate valid. Transcript access is available."
-            : "Certificate valid, but transcript file is unavailable.";
+        var transcript = certificate.Transcript;
+        var transcriptAvailable = transcript is not null;
+        var storedTranscriptAvailable = _fileService.FileExists(transcript?.FilePath);
+        var message = transcript switch
+        {
+            null => "Certificate valid, but no transcript record is linked.",
+            _ when storedTranscriptAvailable => "Certificate valid. Uploaded transcript access is available.",
+            _ => "Certificate valid. Transcript will be generated on demand."
+        };
 
         return new VerificationResult(
             true,
             message,
             certificate.AwardTitle,
             certificate.CompletionDate,
-            transcriptAvailable ? transcriptPath : null,
-            transcriptAvailable ? certificate.Transcript?.TranscriptId : null);
+            storedTranscriptAvailable ? transcript!.FilePath : null,
+            transcriptAvailable ? transcript!.TranscriptId : null);
     }
 
     private static bool MatchesName(Student? student, string studentName) =>

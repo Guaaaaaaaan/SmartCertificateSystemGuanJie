@@ -159,8 +159,7 @@ public static class SeedData
             new Enrollment { StudentId = mei.UserId, CourseId = webCourse.CourseId });
         await db.SaveChangesAsync();
 
-        var transcriptPath = CreateSeedFile(environment, "Transcripts", "alan_tan_transcript.pdf", "Seed transcript file for Alan Tan.");
-        var transcript = CreateTranscript(gpaCalculator, student, transcriptPath, 7,
+        var transcript = CreateTranscript(gpaCalculator, student, null, 7,
             ("Object-Oriented Design", 88, 4),
             ("C# Programming", 82, 4),
             ("Database Development", 76, 3));
@@ -190,7 +189,6 @@ public static class SeedData
         db.Transcripts.AddRange(transcript, meiTranscript, raviTranscript, sophiaTranscript, aisyahTranscript);
         await db.SaveChangesAsync();
 
-        var certificatePath = CreateSeedFile(environment, "Certificates", "SC-2026-0001.pdf", "Seed certificate PDF placeholder.");
         db.Certificates.AddRange(
             new Certificate
             {
@@ -200,8 +198,7 @@ public static class SeedData
                 AwardTitle = "Diploma in Software Development",
                 IssueDate = DateTime.Today.AddDays(-30),
                 CompletionDate = new DateTime(2026, 4, 20),
-                Status = CertificateStatuses.Valid,
-                FilePath = certificatePath
+                Status = CertificateStatuses.Valid
             },
             new Certificate
             {
@@ -285,17 +282,4 @@ public static class SeedData
         };
     }
 
-    private static string CreateSeedFile(IWebHostEnvironment environment, string folder, string fileName, string contents)
-    {
-        var folderPath = Path.Combine(environment.ContentRootPath, "FileStorage", folder);
-        Directory.CreateDirectory(folderPath);
-        var absolutePath = Path.Combine(folderPath, fileName);
-
-        if (!File.Exists(absolutePath))
-        {
-            File.WriteAllText(absolutePath, contents);
-        }
-
-        return Path.Combine("FileStorage", folder, fileName).Replace('\\', '/');
-    }
 }

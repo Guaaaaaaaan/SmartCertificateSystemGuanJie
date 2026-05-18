@@ -21,6 +21,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<StudentService>();
 builder.Services.AddScoped<CertificateService>();
 builder.Services.AddScoped<TranscriptService>();
+builder.Services.AddScoped<TranscriptPdfService>();
 builder.Services.AddScoped<CourseService>();
 builder.Services.AddScoped<FileService>();
 builder.Services.AddScoped<SearchSortService>();

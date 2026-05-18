@@ -5,10 +5,15 @@ using SmartCertificateSystem.Utilities;
 
 namespace SmartCertificateSystem.Controllers;
 
-public class CertificateController(CertificateService certificateService, FileService fileService, ExceptionLogger logger) : Controller
+public class CertificateController(
+    CertificateService certificateService,
+    FileService fileService,
+    TranscriptPdfService transcriptPdfService,
+    ExceptionLogger logger) : Controller
 {
     private readonly CertificateService _certificateService = certificateService;
     private readonly FileService _fileService = fileService;
+    private readonly TranscriptPdfService _transcriptPdfService = transcriptPdfService;
     private readonly ExceptionLogger _logger = logger;
 
     [HttpGet]
@@ -32,13 +37,19 @@ public class CertificateController(CertificateService certificateService, FileSe
         try
         {
             var transcript = await _certificateService.GetTranscriptForValidCertificateAsync(id);
-            if (transcript?.FilePath is null)
+            if (transcript is null)
             {
                 return NotFound();
             }
 
-            var bytes = _fileService.ReadStoredFile(transcript.FilePath);
-            return File(bytes, "application/octet-stream", Path.GetFileName(transcript.FilePath));
+            if (!string.IsNullOrWhiteSpace(transcript.FilePath) && _fileService.FileExists(transcript.FilePath))
+            {
+                var storedBytes = _fileService.ReadStoredFile(transcript.FilePath);
+                return File(storedBytes, "application/pdf", Path.GetFileName(transcript.FilePath));
+            }
+
+            var generatedBytes = _transcriptPdfService.GenerateTranscriptPdf(transcript);
+            return File(generatedBytes, "application/pdf", _transcriptPdfService.BuildTranscriptFileName(transcript));
         }
         catch (Exception ex)
         {
