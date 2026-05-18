@@ -137,6 +137,35 @@ public class ServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task Valid_certificate_without_uploaded_file_can_generate_transcript_pdf()
+    {
+        var certificate = await _db.Certificates.Include(c => c.Transcript).FirstAsync(c => c.CertificateId == "SC-2026-0001");
+        certificate.Transcript!.FilePath = null;
+        await _db.SaveChangesAsync();
+        var certificateService = BuildCertificateService();
+
+        var verification = await certificateService.VerifyCertificate("SC-2026-0001", "Alan Tan", new DateTime(2000, 5, 15));
+
+        Assert.True(verification.IsValid);
+        Assert.Null(verification.TranscriptPath);
+        Assert.NotNull(verification.TranscriptId);
+        Assert.Contains("generated on demand", verification.Message);
+
+        var transcript = await certificateService.GetTranscriptForValidCertificateAsync(verification.TranscriptId!.Value);
+        Assert.NotNull(transcript);
+        Assert.Equal("Alan Tan", transcript.Student!.FullName);
+        Assert.NotEmpty(transcript.Grades);
+
+        var bytes = new TranscriptPdfService().GenerateTranscriptPdf(transcript);
+        var pdfText = System.Text.Encoding.ASCII.GetString(bytes);
+
+        Assert.StartsWith("%PDF-1.4", pdfText);
+        Assert.Contains("Alan Tan", pdfText);
+        Assert.Contains("C# Programming", pdfText);
+        Assert.Contains("%%EOF", pdfText);
+    }
+
+    [Fact]
     public void Transcript_pdf_service_generates_pdf_from_transcript_record()
     {
         var transcript = new Transcript
