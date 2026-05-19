@@ -3,10 +3,12 @@
     ViewData["Title"] = "Register";
 }
 
-<div class="row justify-content-center">
-    <div class="col-lg-7">
-        <h1 class="h3 mb-3">Register</h1>
-        <form asp-action="Register" method="post" class="card card-body">
+<div class="auth-shell">
+    <div class="auth-card">
+        <div class="page-kicker mb-2">New user</div>
+        <h1 class="h3 mb-2">Register</h1>
+        <p class="text-muted mb-4">Create a student or employer account for the certificate portal.</p>
+        <form asp-action="Register" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="row g-3">
                 <div class="col-md-6">
@@ -56,6 +58,14 @@
             <button class="btn btn-primary mt-3" type="submit">Create Account</button>
         </form>
     </div>
+    <aside class="demo-panel">
+        <div class="page-kicker mb-2">Account roles</div>
+        <h2 class="h5 mb-3">What registration covers</h2>
+        <div class="demo-list small">
+            <div class="demo-row"><strong>Student</strong><br />Access personal academic records, certificates, grades, and transcripts.</div>
+            <div class="demo-row"><strong>Employer</strong><br />Use the verification portal to validate a graduate's certificate.</div>
+        </div>
+    </aside>
 </div>
 
 @section Scripts {

@@ -2,13 +2,37 @@
     ViewData["Title"] = "Employer";
 }
 
-<h1 class="h3 mb-3">Employer Verification Portal</h1>
-
-<div class="card">
-    <div class="card-body">
-        <p class="text-muted">
-            Validate a graduate's certificate with the certificate ID, student name, and date of birth.
-        </p>
+<section class="page-hero">
+    <div class="page-kicker mb-2">Employer portal</div>
+    <h1 class="display-6 fw-bold mb-3">Employer Verification Portal</h1>
+    <p class="page-lede">
+        Validate a graduate's certificate with the certificate ID, student name, and date of birth.
+    </p>
+    <div class="hero-actions">
         <a class="btn btn-primary" asp-controller="Certificate" asp-action="Verify">Verify Certificate</a>
+    </div>
+</section>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="record-card">
+            <div class="record-card__label">Step 1</div>
+            <div class="record-card__value">Enter details</div>
+            <p class="text-muted mb-0">Use the certificate ID, student name, and date of birth.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="record-card">
+            <div class="record-card__label">Step 2</div>
+            <div class="record-card__value">Check status</div>
+            <p class="text-muted mb-0">Review whether the submitted credential is valid.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="record-card">
+            <div class="record-card__label">Step 3</div>
+            <div class="record-card__value">Access transcript</div>
+            <p class="text-muted mb-0">Download linked transcript information when available.</p>
+        </div>
     </div>
 </div>

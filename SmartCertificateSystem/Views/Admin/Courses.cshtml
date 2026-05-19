@@ -3,11 +3,16 @@
     ViewData["Title"] = "Courses";
 }
 
-<h1 class="h3 mb-3">Course Management</h1>
+<div class="page-title-row">
+    <div>
+        <div class="page-kicker mb-2">Curriculum</div>
+        <h1 class="h3 page-heading">Course Management</h1>
+    </div>
+</div>
 
 <div class="row g-3 mb-4">
     <div class="col-lg-4">
-        <form asp-action="AddCourse" method="post" class="card card-body h-100">
+        <form asp-action="AddCourse" method="post" class="form-panel h-100">
             <h2 class="h5">Add Course</h2>
             <label asp-for="CourseForm.CourseName" class="form-label"></label>
             <input name="CourseName" class="form-control mb-2" />
@@ -17,7 +22,7 @@
         </form>
     </div>
     <div class="col-lg-4">
-        <form asp-action="AddModule" method="post" class="card card-body h-100">
+        <form asp-action="AddModule" method="post" class="form-panel h-100">
             <h2 class="h5">Assign Module</h2>
             <select name="CourseId" class="form-select mb-2">
                 @foreach (var course in Model.Courses)
@@ -31,7 +36,7 @@
         </form>
     </div>
     <div class="col-lg-4">
-        <form asp-action="EnrollStudent" method="post" class="card card-body h-100">
+        <form asp-action="EnrollStudent" method="post" class="form-panel h-100">
             <h2 class="h5">Enroll Student</h2>
             <select name="CourseId" class="form-select mb-2">
                 @foreach (var course in Model.Courses)
@@ -52,8 +57,7 @@
 
 @foreach (var course in Model.Courses)
 {
-    <div class="card mb-3">
-        <div class="card-body">
+    <div class="course-card mb-3">
             <form asp-action="UpdateCourse" method="post" class="row g-2 align-items-end mb-3">
                 <input type="hidden" name="CourseId" value="@course.CourseId" />
                 <div class="col-md-4">
@@ -99,7 +103,7 @@
                 </div>
                 <div class="col-lg-5">
                     <h3 class="h6">Enrolled Students</h3>
-                    <ul>
+                    <ul class="list-clean">
                     @foreach (var enrollment in course.Enrollments)
                     {
                         <li>@enrollment.Student?.FullName</li>
@@ -107,6 +111,5 @@
                     </ul>
                 </div>
             </div>
-        </div>
     </div>
 }

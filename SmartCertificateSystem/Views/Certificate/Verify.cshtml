@@ -3,10 +3,16 @@
     ViewData["Title"] = "Verify Certificate";
 }
 
+<section class="page-hero">
+    <div class="page-kicker mb-2">Public credential check</div>
+    <h1 class="display-6 fw-bold mb-3">Verify Certificate</h1>
+    <p class="page-lede">Confirm a graduate's academic credential with their certificate ID, legal name, and date of birth.</p>
+</section>
+
 <div class="row g-4">
     <div class="col-lg-5">
-        <h1 class="h3 mb-3">Verify Certificate</h1>
-        <form asp-action="Verify" method="post" class="card card-body">
+        <form asp-action="Verify" method="post" class="form-panel">
+            <h2 class="h5 mb-3">Certificate details</h2>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="mb-3">
                 <label asp-for="CertificateId" class="form-label"></label>
@@ -23,47 +29,61 @@
                 <input asp-for="DateOfBirth" class="form-control" />
                 <span asp-validation-for="DateOfBirth" class="text-danger"></span>
             </div>
-            <button class="btn btn-primary" type="submit">Verify</button>
+            <button class="btn btn-primary w-100" type="submit">Verify</button>
         </form>
-        <div class="small text-muted mt-2">
-            <strong>Demo valid inputs</strong><br />
-            SC-2026-0001, Alan Tan, 2000-05-15<br />
-            SC-2026-0003, Mei Chen, 2001-08-12<br />
-            SC-2026-0004, Ravi Kumar, 1999-11-03<br />
-            SC-2026-0005, Sophia Lim, 2002-02-24
+        <div class="quick-note small mt-3">
+            <div class="card-kicker mb-2">Demo valid inputs</div>
+            <div>SC-2026-0001, Alan Tan, 2000-05-15</div>
+            <div>SC-2026-0003, Mei Chen, 2001-08-12</div>
+            <div>SC-2026-0004, Ravi Kumar, 1999-11-03</div>
+            <div>SC-2026-0005, Sophia Lim, 2002-02-24</div>
         </div>
     </div>
 
     <div class="col-lg-7">
         @if (Model.Result is not null)
         {
-            <div class="card">
-                <div class="card-body">
-                    <h2 class="h5">Verification Result</h2>
-                    <div class="alert @(Model.Result.IsValid ? "alert-success" : "alert-danger")">
-                        @Model.Result.Message
+            <div class="result-panel">
+                <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+                    <div>
+                        <div class="card-kicker">Verification result</div>
+                        <h2 class="h5 mb-0">Certificate status</h2>
                     </div>
-                    @if (Model.Result.IsValid)
-                    {
-                        <dl class="row">
-                            <dt class="col-sm-4">Award Title</dt>
-                            <dd class="col-sm-8">@Model.Result.AwardTitle</dd>
-                            <dt class="col-sm-4">Completion Date</dt>
-                            <dd class="col-sm-8">@Model.Result.CompletionDate?.ToString("yyyy-MM-dd")</dd>
-                            <dt class="col-sm-4">Transcript Access</dt>
-                            <dd class="col-sm-8">
-                                @if (Model.Result.TranscriptId is not null)
-                                {
-                                    <a asp-action="DownloadTranscript" asp-route-id="@Model.Result.TranscriptId">Download transcript</a>
-                                }
-                                else
-                                {
-                                    <span class="text-muted">Unavailable</span>
-                                }
-                            </dd>
-                        </dl>
-                    }
+                    <span class="badge @(Model.Result.IsValid ? "status-valid" : "status-danger")">
+                        @(Model.Result.IsValid ? "Valid" : "Not valid")
+                    </span>
                 </div>
+                <div class="alert @(Model.Result.IsValid ? "alert-success" : "alert-danger")">
+                    @Model.Result.Message
+                </div>
+                @if (Model.Result.IsValid)
+                {
+                    <dl class="row result-list mb-0">
+                        <dt class="col-sm-4">Award Title</dt>
+                        <dd class="col-sm-8">@Model.Result.AwardTitle</dd>
+                        <dt class="col-sm-4">Completion Date</dt>
+                        <dd class="col-sm-8">@Model.Result.CompletionDate?.ToString("yyyy-MM-dd")</dd>
+                        <dt class="col-sm-4">Transcript Access</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.Result.TranscriptId is not null)
+                            {
+                                <a class="btn btn-sm btn-outline-primary" asp-action="DownloadTranscript" asp-route-id="@Model.Result.TranscriptId">Download transcript</a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Unavailable</span>
+                            }
+                        </dd>
+                    </dl>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="result-panel h-100">
+                <div class="card-kicker mb-2">Ready to verify</div>
+                <h2 class="h5">Result will appear here</h2>
+                <p class="text-muted mb-0">Submit certificate details to see the verification status and transcript access.</p>
             </div>
         }
     </div>

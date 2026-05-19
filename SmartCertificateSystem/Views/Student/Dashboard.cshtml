@@ -3,41 +3,40 @@
     ViewData["Title"] = "My Records";
 }
 
-<h1 class="h3 mb-3">My Academic Records</h1>
+<div class="page-title-row">
+    <div>
+        <div class="page-kicker mb-2">Student portal</div>
+        <h1 class="h3 page-heading">My Academic Records</h1>
+    </div>
+</div>
 
 <div class="row g-3 mb-4">
     <div class="col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="small text-muted">Student</div>
-                <div class="h5">@Model.Student.FullName</div>
-                <div class="text-muted">@Model.Student.Email</div>
-            </div>
+        <div class="record-card">
+            <div class="record-card__label">Student</div>
+            <div class="record-card__value">@Model.Student.FullName</div>
+            <div class="text-muted">@Model.Student.Email</div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="small text-muted">Student ID</div>
-                <div class="h5">@Model.Student.StudentId</div>
-                <div class="text-muted">DOB @Model.Student.DateOfBirth.ToString("yyyy-MM-dd")</div>
-            </div>
+        <div class="record-card">
+            <div class="record-card__label">Student ID</div>
+            <div class="record-card__value">@Model.Student.StudentId</div>
+            <div class="text-muted">DOB @Model.Student.DateOfBirth.ToString("yyyy-MM-dd")</div>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="small text-muted">GPA</div>
-                <div class="h5">@Model.Student.GPA.ToString("0.00")</div>
-                <div class="text-muted">@Model.Transcripts.Count transcript(s)</div>
-            </div>
+        <div class="record-card">
+            <div class="record-card__label">GPA</div>
+            <div class="record-card__value">@Model.Student.GPA.ToString("0.00")</div>
+            <div class="text-muted">@Model.Transcripts.Count transcript(s)</div>
         </div>
     </div>
 </div>
 
-<h2 class="h5">Certificates</h2>
+<h2 class="h5 mb-3">Certificates</h2>
 <div class="table-responsive mb-4">
-    <table class="table table-striped">
+    <table class="table table-striped table-hover">
         <thead>
             <tr>
                 <th>ID</th>
@@ -60,22 +59,20 @@
     </table>
 </div>
 
-<h2 class="h5">Transcripts</h2>
+<h2 class="h5 mb-3">Transcripts</h2>
 @foreach (var transcript in Model.Transcripts)
 {
-    <div class="card mb-3">
-        <div class="card-body">
-            <div class="d-flex justify-content-between">
+    <div class="record-card mb-3">
+            <div class="d-flex justify-content-between gap-3">
                 <h3 class="h6">Generated @transcript.GeneratedDate.ToString("yyyy-MM-dd")</h3>
                 <strong>GPA @transcript.GPA.ToString("0.00")</strong>
             </div>
-            <ul>
+            <ul class="list-clean mb-3">
             @foreach (var grade in transcript.Grades)
             {
                 <li>@grade.ModuleName: @grade.Score.ToString("0") / @grade.LetterGrade</li>
             }
             </ul>
             <a class="btn btn-sm btn-outline-primary" asp-action="DownloadTranscript" asp-route-id="@transcript.TranscriptId">Download transcript</a>
-        </div>
     </div>
 }

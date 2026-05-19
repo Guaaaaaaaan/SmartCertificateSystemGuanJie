@@ -3,9 +3,15 @@
     ViewData["Title"] = "Files";
 }
 
-<h1 class="h3 mb-3">File Management</h1>
+<div class="page-title-row">
+    <div>
+        <div class="page-kicker mb-2">Document storage</div>
+        <h1 class="h3 page-heading">File Management</h1>
+    </div>
+</div>
 
-<form asp-action="UploadFile" method="post" enctype="multipart/form-data" class="card card-body">
+<form asp-action="UploadFile" method="post" enctype="multipart/form-data" class="form-panel">
+    <h2 class="h5 mb-3">Upload academic file</h2>
     <div class="row g-3">
         <div class="col-md-3">
             <label asp-for="Category" class="form-label"></label>
@@ -41,6 +47,7 @@
     </div>
 </form>
 
-<div class="alert alert-secondary mt-3">
+<div class="quick-note mt-3">
+    <div class="card-kicker mb-1">Storage paths</div>
     Files are stored under <code>FileStorage/Certificates</code>, <code>FileStorage/Transcripts</code>, and <code>FileStorage/StudentDocuments</code>.
 </div>
